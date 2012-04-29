@@ -42,13 +42,17 @@
         [[NSException exceptionWithName:@"InvalidURLException" reason:@"No URL was set in SMUpdateMessage" userInfo:nil] raise];
     }
     
+    // Replace __VERSION__ in the url
+    NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+    NSString *urlString = [url stringByReplacingOccurrencesOfString:@"__VERSION__" withString:appVersion];
+    
     // Create the request and start it.
-    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlString]];
     receivedData = [NSMutableData data];
     connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:YES];
     if (!connection) 
     {
-        NSLog(@"SMUpdateMessage: Could not create connection!");
+        NSLog(@"SMUpdateMessage: Verbindung konnte nicht erstellt werden");
     }
 }
 
@@ -106,9 +110,10 @@
     // We finished loading. 
     
     // Parse the json.
-    messageData = [NSJSONSerialization JSONObjectWithData:receivedData options:NSJSONReadingMutableLeaves error:NULL];
+    NSError *error = nil;
+    messageData = [NSJSONSerialization JSONObjectWithData:receivedData options:NSJSONReadingMutableLeaves error:&error];
     if (messageData == nil) {
-        NSLog(@"SMUpdateMessage: Das erhaltene JSON File konnte nicht geparst werden.");
+        NSLog(@"SMUpdateMessage: Das erhaltene JSON File konnte nicht geparst werden");
         return;
     }
     
@@ -135,7 +140,7 @@
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    NSLog(@"SMUpdateMessage: Connection Failed");
+    NSLog(@"SMUpdateMessage: Verbindung Fehlgeschlagen");
 }
 
 #pragma Getter

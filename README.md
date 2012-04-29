@@ -23,6 +23,8 @@ Die Daten werden als JSON online gespeichert. Ein Beispiel kann so aussehen:
       }
      ]
     }
+    
+Ob es sich dabei um ein File handelt oder ein Skript (z.B. PHP) spielt keine Rolle. Die klasse erwartet als Antwort auf den Request ein JSON Objekt wie das oben abgebildete. 
 
 ## Anwendung
 
@@ -42,14 +44,17 @@ wird dann eine Instanz erstellt und ihr beauftragt die Nachricht anzuzeigen.
 
     // Check for news.
     message = [[SMUpdateMessage alloc] init];
-    message.url = [NSURL URLWithString:@"http://www.example.com/path/to/update.json"];
+    message.url = @"http://www.example.com/path/to/update.json";
     [message showMessage];
 
-Nun wird von der Applikation eine UIAlertView angezeigt, falls die Nachricht eine Andere ist oder noch keine angezeigt wurde. 
+Im URL kann `__VERSION__` verwendet werden. Dies wird vor dem abschicken des Requests durch den Wert des `CFBundleShortVersionString`ersetzt. 
+
+Beispiel:  
+`http://example.com/news.php?version=__VERSION__` wird zu `http://example.com/news.php?version=1.0.0`
 
 ## Neue Nachricht
 
-Das anzeigen einer anderen Nachricht ist einfach. Passen sie den Text in der JSON Datei an. Am Schluss ändern Sie die ID. Erhöhen sie sie um 1. Dann wird die Nachricht auf den Devices beim nächsten Start angezeigt.
+Das anzeigen einer anderen Nachricht ist einfach. Passen sie den Text in der JSON Datei an. Am Schluss ändern Sie die ID. Erhöhen sie sie um 1. Dann wird die Nachricht auf den Geräten beim nächsten Start angezeigt. 
 
 ## Lizenz (MIT)
 
