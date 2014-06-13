@@ -84,6 +84,11 @@
     
     // Show the alert
     [alert show];
+    
+    // Call the block that the alert was shown.
+    if (self.showMessageBlock) {
+        self.showMessageBlock([messageData[@"id"] intValue]);
+    }
 }
 
 #pragma UIAlertViewDelegate Methods
@@ -92,6 +97,11 @@
 {
     NSArray *buttons = messageData[@"buttons"];
     NSDictionary *button = [buttons objectAtIndex:buttonIndex];
+    
+    // Call the block that a button was clicked
+    if (self.buttonTouchedBlock) {
+        self.buttonTouchedBlock([messageData[@"id"] intValue], button);
+    }
     
     if ([button[@"action"] isEqualToString:@"url"]) {
         // Open the url
