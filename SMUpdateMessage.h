@@ -6,13 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SMUpdateMessage : NSObject <NSURLConnectionDataDelegate, UIAlertViewDelegate>{
-    NSURLConnection *connection;
-    NSMutableData *receivedData;
-    NSString *encoding;
-    
-    NSDictionary *messageData;
-}
+@interface SMUpdateMessage : NSObject <NSURLConnectionDataDelegate, UIAlertViewDelegate>
 
 /**
  Der URL wo die News gespeichert sind.

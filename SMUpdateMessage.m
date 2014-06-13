@@ -20,7 +20,14 @@
 
 @end
 
-@implementation SMUpdateMessage
+@implementation SMUpdateMessage {
+    
+    NSURLConnection *connection;
+    NSMutableData *receivedData;
+    NSString *encoding;
+    
+    NSDictionary *messageData;
+}
 
 @synthesize url;
 @synthesize lastID;
@@ -36,27 +43,33 @@
 
 - (void)showMessage
 {
-    if (url == nil) 
-    {
+    if (url == nil) {
         // Raise an exception if no url is given.
-        [[NSException exceptionWithName:@"InvalidURLException" reason:@"No URL was set in SMUpdateMessage" userInfo:nil] raise];
+        [[NSException exceptionWithName:@"InvalidURLException"
+                                 reason:@"No URL was set in SMUpdateMessage"
+                               userInfo:nil] raise];
     }
     
     // Replace __VERSION__ in the url
-    NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-    NSString *urlString = [url stringByReplacingOccurrencesOfString:@"__VERSION__" withString:appVersion];
+    NSDictionary *infoDic = [[NSBundle mainBundle] infoDictionary];
+    NSString *appVersion = infoDic[@"CFBundleShortVersionString"];
+    NSString *urlString = [url stringByReplacingOccurrencesOfString:@"__VERSION__"
+                                                         withString:appVersion];
     
     // Create the request and start it.
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlString]];
     receivedData = [NSMutableData data];
-    connection = [[NSURLConnection alloc] initWithRequest:request delegate:self startImmediately:YES];
-    if (!connection) 
-    {
-        NSLog(@"SMUpdateMessage: Verbindung konnte nicht erstellt werden");
+    connection = [[NSURLConnection alloc] initWithRequest:request
+                                                 delegate:self
+                                         startImmediately:YES];
+    if (!connection) {
+        NSLog(@"SMUpdateMessage: No connection to server");
     }
 }
 
-- (void)showMessageWithTitle:(NSString *)title message:(NSString *)message andButtons:(NSArray *)buttonTitles
+- (void)showMessageWithTitle:(NSString *)title
+                     message:(NSString *)message
+                  andButtons:(NSArray *)buttonTitles
 {
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
                                                     message:message
@@ -77,13 +90,12 @@
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    NSArray *buttons = [messageData objectForKey:@"buttons"];
+    NSArray *buttons = messageData[@"buttons"];
     NSDictionary *button = [buttons objectAtIndex:buttonIndex];
     
-    if ([[button objectForKey:@"action"] isEqualToString:@"url"])
-    {
+    if ([button[@"action"] isEqualToString:@"url"]) {
         // Open the url
-        NSURL *openUrl = [NSURL URLWithString:[button objectForKey:@"url"]];
+        NSURL *openUrl = [NSURL URLWithString:button[@"url"]];
         [[UIApplication sharedApplication] openURL:openUrl];
     }
 }
@@ -111,49 +123,50 @@
     
     // Parse the json.
     NSError *error = nil;
-    messageData = [NSJSONSerialization JSONObjectWithData:receivedData options:NSJSONReadingMutableLeaves error:&error];
+    messageData = [NSJSONSerialization JSONObjectWithData:receivedData
+                                                  options:NSJSONReadingMutableLeaves
+                                                    error:&error];
     if (messageData == nil) {
-        NSLog(@"SMUpdateMessage: Das erhaltene JSON File konnte nicht geparst werden");
+        NSLog(@"SMUpdateMessage: Received data could not be parsed");
         return;
     }
     
     // Show the message if its a new message
-    if ([[messageData objectForKey:@"id"] intValue] != self.lastID) 
-    {
+    if ([[messageData objectForKey:@"id"] intValue] != self.lastID) {
         // Get the data
-        NSString *title = [messageData objectForKey:@"title"];
-        NSString *message = [messageData objectForKey:@"message"];
-        NSArray *buttons = [messageData objectForKey:@"buttons"];
+        NSString *title = messageData[@"title"];
+        NSString *message = messageData[@"message"];
+        NSArray *buttons = messageData[@"buttons"];
         
         // Get the button names
         NSMutableArray *buttonNames = [NSMutableArray array];
         for (NSDictionary *buttonDic in buttons) {
-            [buttonNames addObject:[buttonDic objectForKey:@"title"]];
+            [buttonNames addObject:buttonDic[@"title"]];
         }
         
         [self showMessageWithTitle:title message:message andButtons:buttonNames];
         
-        // Update the id. 
-        [[NSUserDefaults standardUserDefaults] setObject:[messageData objectForKey:@"id"] forKey:LAST_ID_KEY];
+        // Update the id.
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        [defaults setObject:messageData[@"id"] forKey:LAST_ID_KEY];
     }
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    NSLog(@"SMUpdateMessage: Verbindung Fehlgeschlagen");
+    NSLog(@"SMUpdateMessage: Connection failed");
 }
 
 #pragma Getter
 
 - (int)lastID
 {
-    if (lastID != -1) {
-        return lastID;
+    if (lastID == -1) {
+         // Load the last ID.
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        lastID = [[defaults objectForKey:LAST_ID_KEY] intValue];
     }
     
-    // Load the last ID.
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults]; 
-    lastID = [[defaults objectForKey:LAST_ID_KEY] intValue];
     return lastID;
 }
 
