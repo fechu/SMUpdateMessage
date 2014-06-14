@@ -160,6 +160,9 @@
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         [defaults setObject:messageData[@"id"] forKey:LAST_ID_KEY];
     }
+    else {
+        NSLog(@"SMUpdateMessage: Message with id %d already shown!", self.lastID);
+    }
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
