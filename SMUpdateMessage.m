@@ -64,7 +64,9 @@
     
     
     // Create the request and start it.
-    NSURLRequest *request = [NSURLRequest requestWithURL:[self assembledURL]];
+    NSURL *messageUrl = [self assembledURL];
+    NSLog(@"SMUpdateMessage: Check for new message at url: %@", messageUrl);
+    NSURLRequest *request = [NSURLRequest requestWithURL:messageUrl];
     receivedData = [NSMutableData data];
     connection = [[NSURLConnection alloc] initWithRequest:request
                                                  delegate:self
