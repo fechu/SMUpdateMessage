@@ -1,18 +1,21 @@
-//
-//  SMUpdateMessage.m
-//
-//  Created by Sandro Meier on 20.02.12.
-//  Copyright (c) 2012 FidelisFactory. All rights reserved.
-//
+/**
+ *
+ * @file SMUpdateMessage.m
+ * @author Sandro Meier <sandro.meier@fidelisfactory.ch>
+ *
+ */
 
 #import "SMUpdateMessage.h"
 
+/**
+ *  The key used the defaults (NSUserDefaults) to store the ID that was last shown.
+ */
 #define LAST_ID_KEY @"SMUpdateMessageLastID"
 
 @interface SMUpdateMessage ()
 
 /**
- Zeigt eine Nachricht mit den übergebenen Daten an. 
+ * Shows a UIAlertView with the specified data.
  */
 - (void)showMessageWithTitle:(NSString *)title 
                      message:(NSString *)message 
@@ -140,6 +143,9 @@
         NSLog(@"SMUpdateMessage: Received data could not be parsed");
         return;
     }
+    
+    /// TODO: Check the messageData before processing.
+    /// Right now the application will crash if required data is missing. 
     
     // Show the message if its a new message
     if ([[messageData objectForKey:@"id"] intValue] != self.lastID) {

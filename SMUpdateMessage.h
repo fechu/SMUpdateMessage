@@ -1,7 +1,8 @@
 /**
- @file SMUpdateMessage.h
- @author Sandro Meier <sandro.meier@fidelisfactory.ch>
- @copyright 2012 FidelisFactory
+ *
+ * @file SMUpdateMessage.h
+ * @author Sandro Meier <sandro.meier@fidelisfactory.ch>
+ *
  */
 
 #import <Foundation/Foundation.h>
@@ -25,21 +26,21 @@ typedef void(^SMUpdateMessageButtonTouchedBlock)(int messageId, NSDictionary *bu
 @interface SMUpdateMessage : NSObject <NSURLConnectionDataDelegate, UIAlertViewDelegate>
 
 /**
- Der URL wo die News gespeichert sind.
- Ein URL wird normalerweise das Format "http://www.example.com/news.json" haben. 
- Falls das benötigt wird, kann "__VERSION__" im String verwendet werden. Das wird
- vor dem absenden des Requests ersetzt durch den Versionen String der Applikation. (z.B. 1.0.0)
- Beispiel: 
-    http://www.example.com/news.php?version=__VERSION__
- In der Version 1.0.0 der Applikatin würde der URL so aussehen: 
-    http://www.example.com/news.php?version=1.0.0
+ * The location where the JSON data containing the message can be found.
+ * The URL will have approximatly look like the following: "http://www.example.com/news.json"
+ * 
+ * To give the webservice additional flexibility, you can specify a "__VERSION__" and 
+ * "__LANGUAGE__" placeholders in the URL. These will be replaced with the appropriate values.
+ *
+ * Example:
+ *  http://www.example.com/news.php?version=__VERSION__
+ *  If you are using Version 1.0.1 the URL will look like this when called.
+ *  http://www.example.com/news.php?version=1.0.1
  */
 @property(nonatomic, strong) NSString *url;
 
 /**
- Die ID der letzten Nachricht die angezeigt wurde.
- Stellen Sie sicher dass die ID der Nachricht auf dem Server eindeutig ist. 
- Es kann sonst vorkommen, dass die Nachricht mehr als einmal angezeigt wird.
+ *  The ID of the last message that was shown.
  */
 @property(nonatomic, readonly) int lastID;
 
@@ -54,7 +55,7 @@ typedef void(^SMUpdateMessageButtonTouchedBlock)(int messageId, NSDictionary *bu
 @property(nonatomic, copy) SMUpdateMessageButtonTouchedBlock buttonTouchedBlock;
 
 /**
- Lädt die Nachricht herunter und zeigt sie an, wenn es eine neue ist.
+ * Downloads the newest messages and shows it.
  */
 - (void)showMessage;
 
