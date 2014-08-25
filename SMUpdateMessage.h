@@ -29,8 +29,8 @@ typedef void(^SMUpdateMessageButtonTouchedBlock)(int messageId, NSDictionary *bu
  * The location where the JSON data containing the message can be found.
  * The URL will have approximatly look like the following: "http://www.example.com/news.json"
  * 
- * To give the webservice additional flexibility, you can specify a "__VERSION__" and 
- * "__LANGUAGE__" placeholders in the URL. These will be replaced with the appropriate values.
+ * To give the webservice additional flexibility, you can specify a "__VERSION__"
+ * placeholder in the URL. These will be replaced with the appropriate values.
  *
  * Example:
  *  http://www.example.com/news.php?version=__VERSION__

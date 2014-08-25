@@ -21,6 +21,15 @@
                      message:(NSString *)message 
                   andButtons:(NSArray *)buttonTitles;
 
+/**
+ *  Assembles the URL
+ *
+ *  Takes the given URL and assembles the URL. This will insert all data into the placeholders.
+ *
+ *  @return The assembled urls which includes no more placeholders.
+ */
+- (NSURL *)assembledURL;
+
 @end
 
 @implementation SMUpdateMessage {
@@ -53,14 +62,9 @@
                                userInfo:nil] raise];
     }
     
-    // Replace __VERSION__ in the url
-    NSDictionary *infoDic = [[NSBundle mainBundle] infoDictionary];
-    NSString *appVersion = infoDic[@"CFBundleShortVersionString"];
-    NSString *urlString = [url stringByReplacingOccurrencesOfString:@"__VERSION__"
-                                                         withString:appVersion];
     
     // Create the request and start it.
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlString]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[self assembledURL]];
     receivedData = [NSMutableData data];
     connection = [[NSURLConnection alloc] initWithRequest:request
                                                  delegate:self
@@ -187,6 +191,16 @@
     }
     
     return lastID;
+}
+
+- (NSURL *)assembledURL
+{
+    // Replace __VERSION__ in the url
+    NSDictionary *infoDic = [[NSBundle mainBundle] infoDictionary];
+    NSString *appVersion = infoDic[@"CFBundleShortVersionString"];
+    NSString *urlString = [url stringByReplacingOccurrencesOfString:@"__VERSION__"
+                                                         withString:appVersion];
+    return [NSURL URLWithString:urlString];
 }
 
 @end
